@@ -43,12 +43,33 @@ function colorToggle(marker) {
     }
 }
 
-function openWindow(marker) {
-    var infowindow = new google.maps.InfoWindow({
+function windowToggle(marker) {
+    var marker = marker
+    console.log(marker)
+    var isOpen = false
+    var infoWindow = new google.maps.InfoWindow({
         content: marker.title
     })
-    infowindow.open(map, marker);
+    google.maps.event.addListener(infoWindow, 'closeclick', function() {
+        console.log(marker)
+        colorToggle(marker)
+    })
+    if (isOpen) {
+        console.log('fechou a janela', isOpen)
+        isOpen = false
+    } else {
+        infoWindow.open(map, marker);
+        isOpen = true
+        console.log('abriu a janela', isOpen)
+    }
 }
+
+// function closeWindow(infoWindow, marker) {
+//     google.maps.event.addListener(infoWindow, 'closeclick', function () {
+//         colorToggle(marker)
+//         windowToggle(marker)
+//     });
+// }
 
 function addMarker(marker) {
     var marker = new google.maps.Marker({
@@ -60,7 +81,7 @@ function addMarker(marker) {
     // Eventos ao clicar
     google.maps.event.addListener(marker, 'click', function () {
         colorToggle(marker)
-        openWindow(marker)
+        windowToggle(marker)
     });
 }
 
