@@ -35,6 +35,21 @@ const customIcon2 = {
     strokeWeight: 3
 };
 
+function colorToggle(marker) {
+    if (marker.getIcon().fillColor === "#F7B217") {
+        marker.setIcon(customIcon2)
+    } else {
+        marker.setIcon(customIcon)
+    }
+}
+
+function openWindow(marker) {
+    var infowindow = new google.maps.InfoWindow({
+        content: marker.title
+    })
+    infowindow.open(map, marker);
+}
+
 function addMarker(marker) {
     var marker = new google.maps.Marker({
         map: map,
@@ -42,9 +57,10 @@ function addMarker(marker) {
         icon: customIcon,
         title: marker.name
     });
-    // Altera a cor do icone ao clicar
-    google.maps.event.addListener(marker, 'click', function() {
-        marker.setIcon(customIcon2);
+    // Eventos ao clicar
+    google.maps.event.addListener(marker, 'click', function () {
+        colorToggle(marker)
+        openWindow(marker)
     });
 }
 
@@ -69,7 +85,10 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
     //Adicionando todos os marcadores
-    placesOfInterest.forEach(addMarker);
-    
+    // placesOfInterest.forEach(addMarker);
+    placesOfInterest.forEach(function (place) {
+        addMarker(place)
+    })
+
 
 }
