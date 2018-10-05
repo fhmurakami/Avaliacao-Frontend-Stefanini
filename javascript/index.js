@@ -1,6 +1,6 @@
-console.log('Yet another Hello world');
+console.log('Yet another Hello world')
 
-var map = null;
+var map = null
 
 placesOfInterest = [
     { name: 'Charme da paulista', lat: -23.562172, lng: -46.655794 },
@@ -15,7 +15,7 @@ placesOfInterest = [
     { name: 'Cervejaria Nacional', lat: -23.564740, lng: -46.690641 },
     { name: 'Brewdog', lat: -23.561309, lng: -46.693935 },
     { name: 'Rei das Batidas', lat: -23.570613, lng: -46.705977 }
-];
+]
 
 const customIcon = {
     path: 'M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z',
@@ -24,7 +24,7 @@ const customIcon = {
     scale: 0.98,
     strokeColor: '#666666',
     strokeWeight: 3
-};
+}
 
 const customIcon2 = {
     path: 'M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z',
@@ -33,43 +33,16 @@ const customIcon2 = {
     scale: 0.98,
     strokeColor: '#666666',
     strokeWeight: 3
-};
+}
 
-function colorToggle(marker) {
-    if (marker.getIcon().fillColor === "#F7B217") {
-        marker.setIcon(customIcon2)
-    } else {
+var markersArray = []
+
+function windowToggle(marker, infoWindow) {
+    google.maps.event.addListener(infoWindow, 'closeclick', function () {
         marker.setIcon(customIcon)
-    }
-}
-
-function windowToggle(marker) {
-    var marker = marker
-    console.log(marker)
-    var isOpen = false
-    var infoWindow = new google.maps.InfoWindow({
-        content: marker.title
     })
-    google.maps.event.addListener(infoWindow, 'closeclick', function() {
-        console.log(marker)
-        colorToggle(marker)
-    })
-    if (isOpen) {
-        console.log('fechou a janela', isOpen)
-        isOpen = false
-    } else {
-        infoWindow.open(map, marker);
-        isOpen = true
-        console.log('abriu a janela', isOpen)
-    }
+    infoWindow.open(map, marker);
 }
-
-// function closeWindow(infoWindow, marker) {
-//     google.maps.event.addListener(infoWindow, 'closeclick', function () {
-//         colorToggle(marker)
-//         windowToggle(marker)
-//     });
-// }
 
 function addMarker(marker) {
     var marker = new google.maps.Marker({
@@ -77,15 +50,32 @@ function addMarker(marker) {
         position: new google.maps.LatLng(marker.lat, marker.lng),
         icon: customIcon,
         title: marker.name
-    });
-    // Eventos ao clicar
-    google.maps.event.addListener(marker, 'click', function () {
-        colorToggle(marker)
-        windowToggle(marker)
-    });
+    })
+
+    return marker
+
+}
+
+function markerClick(marker, infoWindow) {
+        // Eventos ao clicar
+        google.maps.event.addListener(marker, 'click', (function (marker) {
+            return function () {
+                infoWindow.setContent('<strong>' + marker.title + '</strong>')
+                windowToggle(marker, infoWindow)
+    
+                for (var j = 0; j < markersArray.length; j++) {
+                    markersArray[j].setIcon(customIcon)
+                }
+    
+                marker.setIcon(customIcon2)
+    
+            }
+        })(marker))
+        markersArray.push(marker)
 }
 
 function initMap() {
+
     var mapOptions = {
         center: new google.maps.LatLng(-23.562172, -46.655794),
         gestureHandling: 'greedy',
@@ -100,16 +90,15 @@ function initMap() {
         zoomControlOptions: {
             style: google.maps.ZoomControlStyle.DEFAULT,
         }
+    }
 
-    };
+    var infoWindow = new google.maps.InfoWindow()
 
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
     //Adicionando todos os marcadores
-    // placesOfInterest.forEach(addMarker);
     placesOfInterest.forEach(function (place) {
-        addMarker(place)
+        var marker = addMarker(place)
+        markerClick(marker, infoWindow)
     })
-
-
 }
