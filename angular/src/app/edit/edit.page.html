@@ -14,6 +14,10 @@
           <ion-list-header>
             <ion-label>List of Names</ion-label>
           </ion-list-header>
+          <ion-item *ngFor="let name of legends; let i=index" lines="full">
+            <ion-input readonly clearInput [value]="name"></ion-input>
+            <ion-button fill="outline" color="secondary" (click)="edit($event, i);">EDIT</ion-button>
+          </ion-item>
         </ion-list>
       </ion-col>
     </ion-row>
