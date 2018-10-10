@@ -12,7 +12,6 @@ export class HomePage {
 
   loading;
   photos: Array<string> = [];
-  list: Array<string> = [];
 
   constructor(
     public loadingController: LoadingController
